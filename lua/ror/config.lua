@@ -40,6 +40,7 @@ local config = {}
 config.values = _RorConfig
 
 local ror_defaults = {
+  picker = "telescope",
   test = {
     message = {
       file = "Running test file",
