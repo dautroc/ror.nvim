@@ -1,17 +1,12 @@
 local M = {}
 
-local pickers = require "telescope.pickers"
-local finders = require "telescope.finders"
-local previewers = require "telescope.previewers"
-local conf = require("telescope.config").values
-
 function M.visit(mode)
   local current_relative_file_path = vim.fn.expand("%:~:.")
 
   if string.match(current_relative_file_path, "/controllers") then
     local file_name = vim.fn.fnamemodify(current_relative_file_path, ":t:r")
     local start, _ = string.find(file_name, "_controller")
-    local model_name = string.sub(file_name, 1, start - 2) -- Removing the last "s"
+    local model_name = string.sub(file_name, 1, start - 2)
     local parsed_model_name = "*" .. model_name .. ".rb"
 
     local models = vim.split(vim.fn.system({ "find", "app/models", "-name", parsed_model_name }), "\n")
@@ -23,15 +18,7 @@ function M.visit(mode)
     end
 
     if #parsed_models > 1 then
-      local opts = {}
-      pickers.new(opts, {
-        prompt_title = "Models",
-        finder = finders.new_table {
-          results = parsed_models
-        },
-        previewer = previewers.vim_buffer_cat.new(opts),
-        sorter = conf.generic_sorter(opts),
-      }):find()
+      require("ror.picker").pick("Models", parsed_models)
     elseif #parsed_models == 1 then
       if mode == "normal" then
         vim.cmd.edit(parsed_models[1])
@@ -52,7 +39,6 @@ function M.visit(mode)
     end
   elseif string.match(current_relative_file_path, "test/models") then
     local model_name = vim.fn.fnamemodify(current_relative_file_path, ":t:r")
-    -- Can go from model test -> controller
     local start, _ = string.find(model_name, "_test")
     if start ~= nil then
       model_name = string.sub(model_name, 1, start - 1)
@@ -68,15 +54,7 @@ function M.visit(mode)
     end
 
     if #parsed_models > 1 then
-      local opts = {}
-      pickers.new(opts, {
-        prompt_title = "Models",
-        finder = finders.new_table {
-          results = parsed_models
-        },
-        previewer = previewers.vim_buffer_cat.new(opts),
-        sorter = conf.generic_sorter(opts),
-      }):find()
+      require("ror.picker").pick("Models", parsed_models)
     elseif #parsed_models == 1 then
       if mode == "normal" then
         vim.cmd.edit(parsed_models[1])

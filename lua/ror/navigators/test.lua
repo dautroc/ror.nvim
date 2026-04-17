@@ -1,10 +1,5 @@
 local M = {}
 
-local pickers = require "telescope.pickers"
-local finders = require "telescope.finders"
-local previewers = require "telescope.previewers"
-local conf = require("telescope.config").values
-
 function M.visit(mode)
   local current_relative_file_path = vim.fn.expand("%:~:.")
 
@@ -21,15 +16,7 @@ function M.visit(mode)
     end
 
     if #parsed_tests > 1 then
-      local opts = {}
-      pickers.new(opts, {
-        prompt_title = "Model Tests",
-        finder = finders.new_table {
-          results = parsed_tests
-        },
-        previewer = previewers.vim_buffer_cat.new(opts),
-        sorter = conf.generic_sorter(opts),
-      }):find()
+      require("ror.picker").pick("Model Tests", parsed_tests)
     elseif #parsed_tests == 1 then
       if mode == "normal" then
         vim.cmd.edit(parsed_tests[1])
@@ -61,15 +48,7 @@ function M.visit(mode)
     end
 
     if #parsed_tests > 1 then
-      local opts = {}
-      pickers.new(opts, {
-        prompt_title = "Controller Tests",
-        finder = finders.new_table {
-          results = parsed_tests
-        },
-        previewer = previewers.vim_buffer_cat.new(opts),
-        sorter = conf.generic_sorter(opts),
-      }):find()
+      require("ror.picker").pick("Controller Tests", parsed_tests)
     elseif #parsed_tests == 1 then
       if mode == "normal" then
         vim.cmd.edit(parsed_tests[1])
