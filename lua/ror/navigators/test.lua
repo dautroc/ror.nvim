@@ -66,7 +66,7 @@ local function test_to_source(current_path, mode)
 
   local files = utils.find_files(source_dir, source_file)
 
-  if #files == 0 and string.find(dir_part, "^lib") then
+  if #files == 0 and string.find(dir_part, "^lib/") then
     source_dir = dir_part
     files = utils.find_files(source_dir, source_file)
   elseif #files == 0 then
