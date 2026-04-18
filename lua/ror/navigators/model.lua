@@ -1,78 +1,41 @@
+local utils = require("ror.navigators.utils")
+
 local M = {}
 
-function M.visit(mode)
-  local current_relative_file_path = vim.fn.expand("%:~:.")
+local function navigate_from_controller(current_path, mode)
+  local file_name = vim.fn.fnamemodify(current_path, ":t:r")
+  local start, _ = string.find(file_name, "_controller")
+  local model_name = string.sub(file_name, 1, start - 2)
+  local parsed_model_name = "*" .. model_name .. ".rb"
 
-  if string.match(current_relative_file_path, "/controllers") then
-    local file_name = vim.fn.fnamemodify(current_relative_file_path, ":t:r")
-    local start, _ = string.find(file_name, "_controller")
-    local model_name = string.sub(file_name, 1, start - 2)
-    local parsed_model_name = "*" .. model_name .. ".rb"
+  local models = utils.find_files("app/models", parsed_model_name)
+  utils.open_or_pick("Models", models, mode, "No model with name: " .. model_name)
+end
 
-    local models = vim.split(vim.fn.system({ "find", "app/models", "-name", parsed_model_name }), "\n")
-    local parsed_models = {}
-    for _, model in pairs(models) do
-      if model ~= "" then
-        table.insert(parsed_models, model)
-      end
-    end
-
-    if #parsed_models > 1 then
-      require("ror.picker").pick("Models", parsed_models)
-    elseif #parsed_models == 1 then
-      if mode == "normal" then
-        vim.cmd.edit(parsed_models[1])
-      elseif mode == "vsplit" then
-        vim.cmd.vsplit(parsed_models[1])
-      end
-    else
-      local nvim_notify_ok, nvim_notify = pcall(require, 'notify')
-      if nvim_notify_ok then
-        nvim_notify(
-          "No model with name: " .. model_name,
-          vim.log.levels.ERROR,
-          { title = "Model file not found", timeout = 2500 }
-        )
-      else
-        vim.notify("Model file not found")
-      end
-    end
-  elseif string.match(current_relative_file_path, "test/models") then
-    local model_name = vim.fn.fnamemodify(current_relative_file_path, ":t:r")
-    local start, _ = string.find(model_name, "_test")
+local function navigate_from_test(current_path, mode)
+  local model_name = vim.fn.fnamemodify(current_path, ":t:r")
+  local start, _ = string.find(model_name, "_test")
+  if start ~= nil then
+    model_name = string.sub(model_name, 1, start - 1)
+  else
+    start, _ = string.find(model_name, "_spec")
     if start ~= nil then
       model_name = string.sub(model_name, 1, start - 1)
     end
-    local parsed_model_name = "*" .. model_name .. ".rb"
+  end
+  local parsed_model_name = "*" .. model_name .. ".rb"
 
-    local models = vim.split(vim.fn.system({ "find", "app/models", "-name", parsed_model_name }), "\n")
-    local parsed_models = {}
-    for _, model in pairs(models) do
-      if model ~= "" then
-        table.insert(parsed_models, model)
-      end
-    end
+  local models = utils.find_files("app/models", parsed_model_name)
+  utils.open_or_pick("Models", models, mode, "No model with name: " .. model_name)
+end
 
-    if #parsed_models > 1 then
-      require("ror.picker").pick("Models", parsed_models)
-    elseif #parsed_models == 1 then
-      if mode == "normal" then
-        vim.cmd.edit(parsed_models[1])
-      elseif mode == "vsplit" then
-        vim.cmd.vsplit(parsed_models[1])
-      end
-    else
-      local nvim_notify_ok, nvim_notify = pcall(require, 'notify')
-      if nvim_notify_ok then
-        nvim_notify(
-          "No model with name: " .. model_name,
-          vim.log.levels.ERROR,
-          { title = "Model file not found", timeout = 2500 }
-        )
-      else
-        vim.notify("Model file not found")
-      end
-    end
+function M.visit(mode)
+  local current_path = vim.fn.expand("%:~:.")
+
+  if string.match(current_path, "/controllers") then
+    navigate_from_controller(current_path, mode)
+  elseif string.match(current_path, "test/models") or string.match(current_path, "spec/models") then
+    navigate_from_test(current_path, mode)
   end
 end
 
