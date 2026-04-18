@@ -9,7 +9,11 @@ Plug 'weizheheng/ror.nvim'
 ```
 
 ## Dependencies
-1. [telescope](https://github.com/nvim-telescope/telescope.nvim)
+
+Choose one of the following picker backends:
+
+1. [telescope](https://github.com/nvim-telescope/telescope.nvim) (default)
+2. [snacks.nvim](https://github.com/folke/snacks.nvim) (requires `snacks.picker`)
 
 ## Optional Dependencies
 
@@ -37,6 +41,7 @@ require("dressing").setup({
 ```lua
 -- The default settings
 require("ror").setup({
+  -- picker = "telescope", -- default, or "snacks" to use snacks.picker
   test = {
     message = {
       -- These are the default title for nvim-notify
