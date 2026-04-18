@@ -3,16 +3,7 @@ local utils = require("ror.navigators.utils")
 local M = {}
 
 local function navigate_from_model(current_path, mode)
-  local model_name = vim.fn.fnamemodify(current_path, ":t:r")
-  local start, _ = string.find(model_name, "_test")
-  if start ~= nil then
-    model_name = string.sub(model_name, 1, start - 1)
-  else
-    start, _ = string.find(model_name, "_spec")
-    if start ~= nil then
-      model_name = string.sub(model_name, 1, start - 1)
-    end
-  end
+  local model_name = utils.strip_test_suffix(vim.fn.fnamemodify(current_path, ":t:r"))
   local parsed_controller_name = "*" .. model_name .. "s_controller.rb"
 
   local controllers = utils.find_files("app/controllers", parsed_controller_name)
@@ -20,16 +11,7 @@ local function navigate_from_model(current_path, mode)
 end
 
 local function navigate_from_test(current_path, mode)
-  local controller_name = vim.fn.fnamemodify(current_path, ":t:r")
-  local start, _ = string.find(controller_name, "_test")
-  if start ~= nil then
-    controller_name = string.sub(controller_name, 1, start - 1)
-  else
-    start, _ = string.find(controller_name, "_spec")
-    if start ~= nil then
-      controller_name = string.sub(controller_name, 1, start - 1)
-    end
-  end
+  local controller_name = utils.strip_test_suffix(vim.fn.fnamemodify(current_path, ":t:r"))
   local parsed_controller_name = "*" .. controller_name .. ".rb"
 
   local controllers = utils.find_files("app/controllers", parsed_controller_name)

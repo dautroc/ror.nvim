@@ -5,6 +5,7 @@ local M = {}
 local function navigate_from_controller(current_path, mode)
   local file_name = vim.fn.fnamemodify(current_path, ":t:r")
   local start, _ = string.find(file_name, "_controller")
+  if start == nil then return end
   local model_name = string.sub(file_name, 1, start - 2)
   local parsed_model_name = "*" .. model_name .. ".rb"
 
@@ -13,16 +14,7 @@ local function navigate_from_controller(current_path, mode)
 end
 
 local function navigate_from_test(current_path, mode)
-  local model_name = vim.fn.fnamemodify(current_path, ":t:r")
-  local start, _ = string.find(model_name, "_test")
-  if start ~= nil then
-    model_name = string.sub(model_name, 1, start - 1)
-  else
-    start, _ = string.find(model_name, "_spec")
-    if start ~= nil then
-      model_name = string.sub(model_name, 1, start - 1)
-    end
-  end
+  local model_name = utils.strip_test_suffix(vim.fn.fnamemodify(current_path, ":t:r"))
   local parsed_model_name = "*" .. model_name .. ".rb"
 
   local models = utils.find_files("app/models", parsed_model_name)

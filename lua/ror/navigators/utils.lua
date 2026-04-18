@@ -11,6 +11,16 @@ function M.find_files(search_dir, file_pattern)
   return parsed
 end
 
+function M.strip_test_suffix(name)
+  for _, suffix in ipairs({ "_test", "_spec" }) do
+    local start, _ = string.find(name, suffix)
+    if start ~= nil then
+      return string.sub(name, 1, start - 1)
+    end
+  end
+  return name
+end
+
 function M.open_or_pick(title, files, mode, not_found_message)
   if #files > 1 then
     require("ror.picker").pick(title, files)
