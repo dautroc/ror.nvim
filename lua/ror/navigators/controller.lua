@@ -5,13 +5,10 @@ function M.visit(mode)
 
   if string.match(current_relative_file_path, "/models") then
     local model_name = vim.fn.fnamemodify(current_relative_file_path, ":t:r")
-    -- Can go from model test -> controller
     local start, _ = string.find(model_name, "_test")
     if start ~= nil then
       model_name = string.sub(model_name, 1, start - 1)
     end
-    -- Rails default of pluralizing controller
-    -- Caveat: not working with controller with pluralize name other than adding s
     local parsed_controller_name = "*" .. model_name .. "s_controller.rb"
 
     local controllers = vim.split(vim.fn.system({ "find", "app/controllers", "-name", parsed_controller_name }), "\n")
@@ -23,19 +20,7 @@ function M.visit(mode)
     end
 
     if #parsed_controllers > 1 then
-      local pickers = require "telescope.pickers"
-      local finders = require "telescope.finders"
-      local previewers = require "telescope.previewers"
-      local conf = require("telescope.config").values
-      local opts = {}
-      pickers.new(opts, {
-        prompt_title = "Controllers",
-        finder = finders.new_table {
-          results = parsed_controllers
-        },
-        previewer = previewers.vim_buffer_cat.new(opts),
-        sorter = conf.generic_sorter(opts),
-      }):find()
+      require("ror.picker").pick("Controllers", parsed_controllers)
     elseif #parsed_controllers == 1 then
       if mode == "normal" then
         vim.cmd.edit(parsed_controllers[1])
@@ -56,7 +41,6 @@ function M.visit(mode)
     end
   elseif string.match(current_relative_file_path, "test/controllers") then
     local controller_name = vim.fn.fnamemodify(current_relative_file_path, ":t:r")
-    -- Can go from controller test -> controller
     local start, _ = string.find(controller_name, "_test")
     if start ~= nil then
       controller_name = string.sub(controller_name, 1, start - 1)
@@ -72,19 +56,7 @@ function M.visit(mode)
     end
 
     if #parsed_controllers > 1 then
-      local pickers = require "telescope.pickers"
-      local finders = require "telescope.finders"
-      local previewers = require "telescope.previewers"
-      local conf = require("telescope.config").values
-      local opts = {}
-      pickers.new(opts, {
-        prompt_title = "Controllers",
-        finder = finders.new_table {
-          results = parsed_controllers
-        },
-        previewer = previewers.vim_buffer_cat.new(opts),
-        sorter = conf.generic_sorter(opts),
-      }):find()
+      require("ror.picker").pick("Controllers", parsed_controllers)
     elseif #parsed_controllers == 1 then
       if mode == "normal" then
         vim.cmd.edit(parsed_controllers[1])
