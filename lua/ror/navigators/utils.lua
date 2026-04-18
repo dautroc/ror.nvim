@@ -29,7 +29,7 @@ function M.open_or_pick(title, files, mode, not_found_message)
         { title = "File not found", timeout = 2500 }
       )
     else
-      vim.notify("File not found")
+      vim.notify(not_found_message, vim.log.levels.ERROR)
     end
   end
 end
