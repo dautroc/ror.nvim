@@ -128,7 +128,12 @@ function M.sync_routes_without_path_helper()
 end
 
 function M.list_routes()
-  local routes = vim.json.decode(Path:new(get_routes_path()):read())
+  local routes_path = get_routes_path()
+  if vim.fn.filereadable(routes_path) ~= 1 then
+    vim.notify("No routes found. Run :RorListRoutes or sync routes first.", vim.log.levels.WARN)
+    return
+  end
+  local routes = vim.json.decode(Path:new(routes_path):read())
   vim.ui.select(
     routes,
     { prompt = "Available routes" },
