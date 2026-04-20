@@ -3,7 +3,7 @@ local M = {}
 
 function M.select_finders()
   vim.ui.select(
-    { "Models", "Controllers", "Migrations", "Views", "Model tests", "Controller tests", "System tests" },
+    { "Models", "Controllers", "Migrations", "Views", "Mailers", "Helpers", "Jobs", "Services", "Workers", "Policies" },
     { prompt = "What are you looking for?" },
     function (finder)
       if finder == "Models" then
@@ -14,12 +14,18 @@ function M.select_finders()
         require("ror.finders.migration").find()
       elseif finder == "Views" then
         require("ror.finders.view").find()
-      elseif finder == "Model tests" then
-        require("ror.finders.model_test").find()
-      elseif finder == "Controller tests" then
-        require("ror.finders.controller_test").find()
-      elseif finder == "System tests" then
-        require("ror.finders.system_test").find()
+      elseif finder == "Mailers" then
+        require("ror.finders.mailer").find()
+      elseif finder == "Helpers" then
+        require("ror.finders.helper").find()
+      elseif finder == "Jobs" then
+        require("ror.finders.job").find()
+      elseif finder == "Services" then
+        require("ror.finders.service").find()
+      elseif finder == "Workers" then
+        require("ror.finders.worker").find()
+      elseif finder == "Policies" then
+        require("ror.finders.policy").find()
       end
     end
   )
